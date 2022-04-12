@@ -1,43 +1,86 @@
 <template>
   <div class="home">
-    <van-search placeholder="请输入搜索关键词" shape="round" />
+    <van-search placeholder="" shape="round" />
     <van-swipe
       class="my-swipe"
       :autoplay="3000"
       :show-indicators="false"
       style="background-color: #fff"
     >
-      <van-swipe-item v-for="(i, index) in swipeImg" :key="index">
-        <img :src="i" alt="" class="s-img" />
+      <van-swipe-item v-for="(i, index) in bannerImg" :key="index">
+        <img :src="i.coverImage | dalImg" alt="" class="s-img" />
       </van-swipe-item>
     </van-swipe>
-    <van-grid column-num="3">
-      <van-grid-item icon="photo-o" text="文字" />
-      <van-grid-item icon="photo-o" text="文字" />
-      <van-grid-item icon="photo-o" text="文字" />
-      <van-grid-item icon="photo-o" text="文字" />
-      <van-grid-item icon="photo-o" text="文字" />
-      <van-grid-item icon="photo-o" text="文字" />
+    <van-grid :border="false" column-num="3">
+      <van-grid-item
+        v-for="(i, index) in product_categories"
+        :key="index"
+        :to="{ name: i.desc }"
+      >
+        <van-image :src="i.coverImage | dalImg" />
+      </van-grid-item>
+    </van-grid>
+    <van-swipe
+      class="my-swipe"
+      :autoplay="2500"
+      :show-indicators="false"
+      style="background-color: #fff"
+    >
+      <van-swipe-item v-for="(i, index) in pzImg" :key="index">
+        <img :src="i.coverImage | dalImg" class="s-img" />
+      </van-swipe-item>
+    </van-swipe>
+    <van-grid :border="false" :column-num="2" :gutter="10" class="products">
+      <van-grid-item
+        v-for="item in products"
+        :key="item.id"
+        @click="toDetail(item)"
+      >
+        <van-image :src="item.coverImage | dalImg" />
+        <p>{{ item.name }}</p>
+        <span>¥{{ item.price }}</span>
+      </van-grid-item>
     </van-grid>
   </div>
 </template>
 
 <script>
+import { get } from "../utils/request";
 export default {
   data() {
     return {
-      swipeImg: [
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/02/17/c40a29b4c2d8edfa5537ce4f78fb8822_857289179952755736.png",
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/04/08/ab76eaf29ce8e0b0ff6240a1e138f7fe_1602829636561602449.jpg",
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/04/08/dbfc721da3b8c40cf47459a2e42ba8f7_6056454656449763077.jpg",
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/03/04/3d274746aa31f2a7107b07d2860397e9_7686862900571971000.png",
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/02/17/c40a29b4c2d8edfa5537ce4f78fb8822_857289179952755736.png",
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/04/08/ab76eaf29ce8e0b0ff6240a1e138f7fe_1602829636561602449.jpg",
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/04/08/dbfc721da3b8c40cf47459a2e42ba8f7_6056454656449763077.jpg",
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/03/04/3d274746aa31f2a7107b07d2860397e9_7686862900571971000.png",
-        "https://uploadstatic.mihoyo.com/puzzle/upload/puzzle/2022/02/17/c40a29b4c2d8edfa5537ce4f78fb8822_857289179952755736.png",
-      ],
+      bannerImg: [],
+      pzImg: [],
+      product_categories: [],
+      products: [],
+      loading: true,
+      finished: true,
     };
+  },
+  created() {
+    get("api/v1/banners", { category: 1 }).then((res) => {
+      this.bannerImg = res.data;
+    });
+    get("api/v1/banners", { category: 2 }).then((res) => {
+      this.pzImg = res.data;
+    });
+    get("api/v1/product_categories").then((res) => {
+      this.product_categories = res.data;
+    });
+    get("api/v1/products", { per: 100 }).then((res) => {
+      res.data.sort((a, b) => Math.random() - 0.5).splice(20);
+      this.products = res.data;
+    });
+  },
+  methods: {
+    toDetail(item) {
+      this.$router.push({
+        name: "Detail",
+        params: {
+          id: item.id,
+        },
+      });
+    },
   },
 };
 </script>
@@ -53,5 +96,15 @@ h3 {
   text-align: center;
   border-bottom: #9e9e9e1f 1px solid;
   background-color: #fff;
+}
+.products {
+  margin-top: 1.2rem;
+  margin-bottom: 60px;
+}
+.products .van-grid-item__content {
+  border-radius: 0.5rem;
+}
+.products span {
+  align-self: flex-start;
 }
 </style>

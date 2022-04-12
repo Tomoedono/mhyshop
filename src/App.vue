@@ -1,8 +1,7 @@
 <template>
   <div id="app">
     <router-view class="main"></router-view>
-
-    <van-tabbar route>
+    <van-tabbar route v-show="isShowTabBar">
       <van-tabbar-item icon="home-o" :to="{ name: 'Home' }"
         >首页</van-tabbar-item
       >
@@ -18,7 +17,21 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      isShowTabBar: true,
+    };
+  },
+
+  watch: {
+    // 监听路由变化
+    $route(v) {
+      // 判断当前跳转到的页面是否需要隐藏底部导航
+      if (v.meta.hideTabBar) {
+        this.isShowTabBar = false;
+      } else {
+        this.isShowTabBar = true;
+      }
+    },
   },
 };
 </script>
@@ -41,5 +54,9 @@ body,
 }
 .main {
   flex: 1;
+}
+img {
+  max-width: 100%;
+  display: block;
 }
 </style>
