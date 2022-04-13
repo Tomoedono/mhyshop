@@ -5,7 +5,10 @@
       <van-tabbar-item icon="home-o" :to="{ name: 'Home' }"
         >首页</van-tabbar-item
       >
-      <van-tabbar-item icon="cart-o" :to="{ name: 'Cart' }"
+      <van-tabbar-item
+        icon="cart-o"
+        :to="{ name: 'Cart' }"
+        :badge="cartCount > 0 ? cartCount : ''"
         >购物车</van-tabbar-item
       >
       <van-tabbar-item icon="contact" :to="{ name: 'User' }"
@@ -15,13 +18,22 @@
   </div>
 </template>
 <script>
+import { mapGetters } from "vuex";
+import { isLogined } from "./utils/auth";
 export default {
   data() {
     return {
       isShowTabBar: true,
     };
   },
-
+  computed: {
+    ...mapGetters(["cartCount"]),
+  },
+  created() {
+    if (isLogined()) {
+      this.$store.dispatch("loadCarts");
+    }
+  },
   watch: {
     // 监听路由变化
     $route(v) {

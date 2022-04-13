@@ -8,12 +8,12 @@
             round
             width="5rem"
             height="5rem"
-            src="https://img01.yzcdn.cn/vant/cat.jpeg"
+            src="https://img-static.mihoyo.com/communityweb/upload/c9d11674eac7631d2210a1ba20799958.png?x-oss-process=image/resize,m_lfit,w_140,h_140,limit_1/format,webp"
           />
         </div>
         <div class="">
-          <h4>用户name</h4>
-          <p>通行证 ID: 111111</p>
+          <h4>{{ this.user.nickName }}</h4>
+          <p>通行证 ID: {{ this.user.id }}</p>
         </div>
       </div>
       <div class="mhyServe">
@@ -44,14 +44,38 @@
         </div>
       </div>
       <div>
-        <van-button block>退出登录</van-button>
+        <van-button block @click="logOut">退出登录</van-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { userInfoAPI } from "../services/auth";
+import { removeToken } from "../utils/auth";
+export default {
+  data() {
+    return {
+      user: {},
+    };
+  },
+  created() {
+    this.loadData();
+  },
+  methods: {
+    logOut() {
+      removeToken();
+      // 重置购物车信息
+      this.$store.commit("resetCarts");
+      this.$router.replace("/");
+    },
+    async loadData() {
+      const res = await userInfoAPI();
+      // console.log(res);
+      this.user = res.data;
+    },
+  },
+};
 </script>
 
 <style>
@@ -59,6 +83,10 @@ export default {};
   display: flex;
   background-color: #fff;
   padding: 1rem;
+}
+.userInfo h4 {
+  margin-top: 1rem;
+  height: 1rem;
 }
 .userHead {
   margin-right: 1rem;

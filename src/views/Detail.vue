@@ -20,17 +20,28 @@
       v-model="showsku"
       :sku="sku"
       :goods="goods"
+      @stepper-change="assw"
       @buy-clicked="onBuyClicked"
       @add-cart="onAddCartClicked"
     />
-    <van-cell title="请选择商品款式" is-link title-style="color:#9696a1" />
+    <van-cell
+      title="请选择商品款式"
+      is-link
+      title-style="color:#9696a1"
+      @click="onClickButton"
+    />
     <div style="margin-top: 1.2rem">
       <van-cell title="商品详情" />
       <div class="content" v-html="product.content"></div>
     </div>
     <van-goods-action>
       <van-goods-action-icon icon="chat-o" text="客服" @click="onClickIcon" />
-      <van-goods-action-icon icon="cart-o" text="购物车" @click="toCart" />
+      <van-goods-action-icon
+        icon="cart-o"
+        :badge="$store.getters.cartCount"
+        text="购物车"
+        @click="toCart"
+      />
       <van-goods-action-icon icon="shop-o" text="店铺" @click="onClickIcondp" />
       <van-goods-action-button
         type="danger"
@@ -43,7 +54,8 @@
 
 <script>
 import { get } from "../utils/request";
-import LoginVue from "./Login.vue";
+import { addToCart } from "../services/carts";
+import { Toast } from "vant";
 export default {
   data() {
     return {
@@ -56,6 +68,7 @@ export default {
       goods: {
         picture: "",
       },
+      amount: 1,
     };
   },
   async created() {
@@ -111,7 +124,9 @@ export default {
         name: "Cart",
       });
     },
-    onClickIcon() {},
+    onClickIcon() {
+      Toast.fail("暂未开通");
+    },
     onClickIcondp() {
       this.$router.push({
         name: this.product.category.desc,
@@ -123,8 +138,15 @@ export default {
     onBuyClicked() {
       //购买
     },
-    onAddCartClicked() {
+    async onAddCartClicked() {
       //加入购物车
+      await addToCart(this.product.id, this.amount, this.product.price);
+      this.$store.dispatch("loadCarts");
+      Toast.success("加入购物车成功");
+      this.showsku = false;
+    },
+    assw(value) {
+      this.amount = value;
     },
   },
 };

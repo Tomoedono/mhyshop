@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import HomeView from "../views/HomeView.vue";
-
+import { isLogined } from "../utils/auth";
 Vue.use(VueRouter);
 
 const routes = [
@@ -51,16 +51,11 @@ const routes = [
     component: () => import("../views/list/Ys.vue"),
   },
   {
-    path: "/11",
-    name: "11",
-    component: () => import("../views/11.vue"),
-  },
-  {
     name: "Cart",
     path: "/cart",
     component: () => import("../views/Cart.vue"),
     meta: {
-      neddLogin: true,
+      needLogin: true,
     },
   },
   {
@@ -68,7 +63,7 @@ const routes = [
     path: "/user",
     component: () => import("../views/User.vue"),
     meta: {
-      neddLogin: true,
+      needLogin: true,
     },
   },
   {
@@ -83,6 +78,26 @@ const routes = [
 
 const router = new VueRouter({
   routes,
+  mode: "hash",
 });
-
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location, onResolve, onReject) {
+  if (onResolve || onReject)
+    return originalPush.call(this, location, onResolve, onReject);
+  return originalPush.call(this, location).catch((err) => err);
+};
+router.beforeEach((to, from, next) => {
+  if (to.meta.needLogin) {
+    // 判断是否登录
+    if (isLogined()) {
+      next();
+    } else {
+      next({
+        name: "Login",
+      });
+    }
+  } else {
+    next();
+  }
+});
 export default router;
