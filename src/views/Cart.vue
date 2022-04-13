@@ -53,9 +53,6 @@ export default {
 
   methods: {
     onSubmit() {
-      console.log(this.carts);
-      console.log(this.carts.every((item) => item.isChk));
-
       loadCartsAPI();
     },
     toDetail(item) {
@@ -94,7 +91,6 @@ export default {
         this.carts.forEach((item) => (item.isChk = v));
       },
       get() {
-        console.log(this.carts.length);
         return this.carts.length > 0
           ? this.carts.every((item) => item.isChk)
           : false;

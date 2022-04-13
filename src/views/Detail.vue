@@ -102,6 +102,18 @@ export default {
           price: this.product.price * 100, // 价格（单位分）
           stock_num: this.product.amount, // 当前 sku 组合对应的库存
         },
+        {
+          id: this.id, // skuId
+          s1: "4", // 规格类目 k_s 为 s1 的对应规格值 id
+          price: this.product.price * 100, // 价格（单位分）
+          stock_num: this.product.amount, // 当前 sku 组合对应的库存
+        },
+        {
+          id: this.id, // skuId
+          s1: "5", // 规格类目 k_s 为 s1 的对应规格值 id
+          price: this.product.price * 100, // 价格（单位分）
+          stock_num: this.product.amount, // 当前 sku 组合对应的库存
+        },
       ],
       price: this.product.price,
       stock_num: this.product.amount,

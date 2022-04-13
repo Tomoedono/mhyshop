@@ -25,7 +25,7 @@ export default {
     };
   },
   created() {
-    get("api/v1/products", { category: 4 }).then((res) => {
+    get("api/v1/products", { category: 4, per: 20 }).then((res) => {
       this.products = res.data;
     });
   },
